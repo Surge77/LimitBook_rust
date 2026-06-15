@@ -9,7 +9,7 @@ use engine_core::{spawn, RuntimeConfig};
 use gateway::state::{spawn_drain, AppState};
 use gateway::{build_router, metrics, sim};
 
-const BIND_ADDR: &str = "127.0.0.1:8080";
+const DEFAULT_BIND_ADDR: &str = "127.0.0.1:8080";
 
 #[tokio::main]
 async fn main() {
@@ -30,7 +30,10 @@ async fn main() {
 
     let app = build_router(state);
 
-    let addr: SocketAddr = BIND_ADDR.parse().expect("invalid bind address");
+    // Bind address is configurable so the container can listen on 0.0.0.0 while local dev stays
+    // on loopback.
+    let bind = std::env::var("LIMITBOOK_BIND").unwrap_or_else(|_| DEFAULT_BIND_ADDR.to_string());
+    let addr: SocketAddr = bind.parse().expect("invalid bind address");
     let listener = tokio::net::TcpListener::bind(addr)
         .await
         .expect("failed to bind");

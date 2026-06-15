@@ -1,0 +1,18 @@
+# Multi-stage build for the LimitBook gateway (engine + Axum service).
+FROM rust:1.90-slim AS builder
+WORKDIR /app
+
+# Copy the whole workspace (engine-core + gateway) and build the gateway in release.
+COPY Cargo.toml Cargo.lock rust-toolchain.toml ./
+COPY engine-core ./engine-core
+COPY gateway ./gateway
+RUN cargo build --release -p gateway
+
+FROM debian:bookworm-slim
+RUN useradd -m -u 10001 limitbook
+COPY --from=builder /app/target/release/gateway /usr/local/bin/gateway
+USER limitbook
+ENV LIMITBOOK_BIND=0.0.0.0:8080
+ENV RUST_LOG=gateway=info
+EXPOSE 8080
+ENTRYPOINT ["gateway"]
