@@ -26,4 +26,6 @@ serde = { workspace = true, optional = true }
 criterion.workspace = true
 proptest.workspace = true
 
-# Benchmark target is added in milestone M5 (benches/matching.rs).
+[[bench]]
+name = "matching"
+harness = false
