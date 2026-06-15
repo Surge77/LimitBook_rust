@@ -1,8 +1,40 @@
-//! LimitBook gateway: Axum + tokio service that wraps the matching engine.
+//! LimitBook gateway binary: a thin bootstrap over the [`gateway`] library.
 //!
-//! Scaffold entry point. REST routes, WebSocket broadcast, metrics, and the simulator are
-//! wired up in milestone M6, after the engine core and single-writer loop exist.
+//! Spins up the engine on its own thread, bridges its output to a tokio broadcast for WebSocket
+//! fan-out, starts the simulator task, and serves the router on localhost.
 
-fn main() {
-    println!("LimitBook gateway — scaffold. Engine wiring lands in milestone M6.");
+use std::net::SocketAddr;
+
+use engine_core::{spawn, RuntimeConfig};
+use gateway::state::{spawn_drain, AppState};
+use gateway::{build_router, metrics, sim};
+
+const BIND_ADDR: &str = "127.0.0.1:8080";
+
+#[tokio::main]
+async fn main() {
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| "gateway=info,tower_http=info".into()),
+        )
+        .init();
+
+    let prometheus = metrics::install().expect("failed to install Prometheus recorder");
+
+    let (engine, rx) = spawn(RuntimeConfig::default()).expect("failed to start engine");
+    let state = AppState::new(engine, prometheus);
+
+    spawn_drain(rx, state.clone());
+    sim::spawn_simulator(state.clone());
+
+    let app = build_router(state);
+
+    let addr: SocketAddr = BIND_ADDR.parse().expect("invalid bind address");
+    let listener = tokio::net::TcpListener::bind(addr)
+        .await
+        .expect("failed to bind");
+    tracing::info!("LimitBook gateway listening on http://{addr}");
+
+    axum::serve(listener, app).await.expect("server error");
 }

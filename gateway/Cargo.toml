@@ -8,6 +8,10 @@ repository.workspace = true
 rust-version.workspace = true
 description = "Axum + tokio gateway wrapping the LimitBook matching engine (REST + WebSocket + metrics)"
 
+[lib]
+name = "gateway"
+path = "src/lib.rs"
+
 [[bin]]
 name = "gateway"
 path = "src/main.rs"
@@ -26,3 +30,7 @@ metrics-exporter-prometheus.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 rand.workspace = true
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }
+http-body-util = "0.1"
