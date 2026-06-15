@@ -1,0 +1,41 @@
+name: Bug report
+description: Report incorrect behavior in the engine, gateway, or frontend
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. **Do not** report security issues here — see
+        [SECURITY.md](../../SECURITY.md).
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - engine-core (matcher / book)
+        - gateway (REST / WS / metrics)
+        - frontend (UI)
+        - build / tooling
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug, including the expected vs actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: A minimal order sequence or request that triggers it. For matcher bugs, the exact order inputs in time order are ideal.
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: Environment
+      description: OS, Rust version (`rustc --version`), Node version, commit SHA.
+    validations:
+      required: false

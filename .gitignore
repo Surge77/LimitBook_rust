@@ -1,0 +1,35 @@
+# Rust
+/target
+**/target
+Cargo.lock.bak
+*.pdb
+
+# Criterion benchmark output
+/target/criterion
+
+# Node / frontend
+node_modules
+frontend/dist
+frontend/.vite
+*.local
+
+# Coverage
+*.profraw
+/coverage
+/lcov.info
+
+# Editor / OS
+*.stackdump
+.idea
+.vscode
+*.swp
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
