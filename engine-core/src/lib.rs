@@ -18,15 +18,17 @@
 //!   - [`book`]: the two-sided limit order book (slab arena + per-side `BTreeMap`).
 //!   - [`matcher`]: pure price-time crossing predicates.
 //!   - [`engine`]: the synchronous `MatchingEngine` orchestrator.
-//!   - `runtime`: single-writer thread + channels, populated in milestone M4.
+//!   - [`runtime`]: single-writer thread + bounded channels (LMAX-style).
 
 pub mod book;
 pub mod domain;
 pub mod engine;
 pub mod matcher;
+pub mod runtime;
 
 pub use domain::{
     AccountId, BookLevel, BookSnapshot, EngineError, EngineEvent, Order, OrderId, OrderType, Price,
     Qty, RejectReason, Seq, Side, StpPolicy, Trade, TICK_CENTS,
 };
 pub use engine::MatchingEngine;
+pub use runtime::{spawn, Command, EngineHandle, EngineMsg, RuntimeConfig};
