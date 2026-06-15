@@ -12,8 +12,15 @@ description = "Pure-Rust price-time-priority order-matching engine (no async, no
 name = "engine_core"
 path = "src/lib.rs"
 
+[features]
+# Off by default — the core matcher stays std-only. The gateway enables this to serialize
+# engine value types onto the wire.
+default = []
+serde = ["dep:serde"]
+
 [dependencies]
 slab.workspace = true
+serde = { workspace = true, optional = true }
 
 [dev-dependencies]
 criterion.workspace = true

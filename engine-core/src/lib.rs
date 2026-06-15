@@ -13,9 +13,14 @@
 //!
 //! The gateway crate wraps this engine behind channels; this crate never depends on the gateway.
 //!
-//! Modules are filled in across milestones M2–M4. This is the scaffold entry point.
+//! Module map:
+//!   - [`domain`]: value types (newtypes, enums, `Order`, `Trade`, `EngineEvent`, `EngineError`).
+//!   - `book`, `matcher`: populated in milestone M3.
+//!   - `engine`: single-writer loop, populated in milestone M4.
 
-// Subsequent milestones populate these modules:
-//   M2: domain  (newtypes, enums, Order, Trade, EngineEvent, EngineError)
-//   M3: book, matcher
-//   M4: engine  (single-writer loop)
+pub mod domain;
+
+pub use domain::{
+    AccountId, BookLevel, BookSnapshot, EngineError, EngineEvent, Order, OrderId, OrderType, Price,
+    Qty, RejectReason, Seq, Side, StpPolicy, Trade, TICK_CENTS,
+};

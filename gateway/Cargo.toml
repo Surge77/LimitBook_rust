@@ -13,7 +13,7 @@ name = "gateway"
 path = "src/main.rs"
 
 [dependencies]
-engine-core = { path = "../engine-core" }
+engine-core = { path = "../engine-core", features = ["serde"] }
 
 axum.workspace = true
 tokio.workspace = true
