@@ -102,13 +102,7 @@ pub struct Order {
 
 impl Order {
     /// Construct a plain limit order (test/convenience helper).
-    pub fn limit(
-        id: OrderId,
-        account: AccountId,
-        side: Side,
-        price: Price,
-        quantity: Qty,
-    ) -> Self {
+    pub fn limit(id: OrderId, account: AccountId, side: Side, price: Price, quantity: Qty) -> Self {
         Order {
             id,
             account,

@@ -15,12 +15,18 @@
 //!
 //! Module map:
 //!   - [`domain`]: value types (newtypes, enums, `Order`, `Trade`, `EngineEvent`, `EngineError`).
-//!   - `book`, `matcher`: populated in milestone M3.
-//!   - `engine`: single-writer loop, populated in milestone M4.
+//!   - [`book`]: the two-sided limit order book (slab arena + per-side `BTreeMap`).
+//!   - [`matcher`]: pure price-time crossing predicates.
+//!   - [`engine`]: the synchronous `MatchingEngine` orchestrator.
+//!   - `runtime`: single-writer thread + channels, populated in milestone M4.
 
+pub mod book;
 pub mod domain;
+pub mod engine;
+pub mod matcher;
 
 pub use domain::{
     AccountId, BookLevel, BookSnapshot, EngineError, EngineEvent, Order, OrderId, OrderType, Price,
     Qty, RejectReason, Seq, Side, StpPolicy, Trade, TICK_CENTS,
 };
+pub use engine::MatchingEngine;
