@@ -26,6 +26,9 @@ frontend/.vite
 .DS_Store
 Thumbs.db
 
+# Machine-local cargo config (WDAC target-dir redirect)
+.cargo/
+
 # Env / secrets
 .env
 .env.*

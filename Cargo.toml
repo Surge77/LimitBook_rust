@@ -1,0 +1,52 @@
+[workspace]
+resolver = "2"
+members = ["engine-core", "gateway"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Surge77"]
+repository = "https://github.com/Surge77/LimitBook_rust"
+rust-version = "1.80"
+
+[workspace.dependencies]
+# Engine core runtime dep (justified: hot-path-free slab arena for order nodes)
+slab = "0.4"
+
+# Gateway async + web
+axum = { version = "0.7", features = ["ws"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "signal"] }
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+crossbeam-channel = "0.5"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Metrics + tracing
+metrics = "0.23"
+metrics-exporter-prometheus = { version = "0.15", default-features = false }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Simulator RNG
+rand = "0.8"
+
+# Dev / test / bench
+criterion = "0.5"
+proptest = "1"
+
+# Build the release/bench profile for real low-latency measurement.
+# Without fat LTO + single codegen unit, microsecond tail-latency numbers are dominated by
+# cross-crate call overhead and are not representative.
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+
+[profile.bench]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
