@@ -15,7 +15,7 @@ rust-version = "1.80"
 slab = "0.4"
 
 # Gateway async + web
-axum = { version = "0.7", features = ["ws"] }
+axum = { version = "0.8", features = ["ws"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "time", "signal"] }
 tower-http = { version = "0.6", features = ["cors", "trace"] }
 crossbeam-channel = "0.5"
