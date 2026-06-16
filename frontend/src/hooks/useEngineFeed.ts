@@ -96,7 +96,7 @@ export function useEngineFeed(): FeedState {
       ws.onmessage = (e) => {
         try {
           const msg = JSON.parse(e.data as string) as ServerMessage
-          if (msg.type === 'trade') tradeCount.current += msg.quantity
+          if (msg.type === 'trade') tradeCount.current += 1
           if (msg.type === 'order_accepted') orderCount.current += 1
           dispatch({ kind: 'message', msg })
         } catch {
