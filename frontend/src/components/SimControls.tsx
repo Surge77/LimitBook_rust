@@ -1,9 +1,25 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { startSim, stopSim } from '../lib/api'
 
+const DEFAULT_RATE = 500
+
 export function SimControls() {
-  const [rate, setRate] = useState(500)
+  const [rate, setRate] = useState(DEFAULT_RATE)
   const [running, setRunning] = useState(false)
+
+  // Auto-start synthetic flow on mount so the dashboard is alive on load rather than blank
+  // until the operator clicks Start. Stop flow remains available. Idempotent across clients.
+  useEffect(() => {
+    let cancelled = false
+    startSim(DEFAULT_RATE)
+      .then(() => {
+        if (!cancelled) setRunning(true)
+      })
+      .catch(() => undefined)
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const toggle = async () => {
     try {
