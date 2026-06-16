@@ -13,6 +13,9 @@ frontend/dist
 frontend/.vite
 *.local
 
+# Playwright MCP test artifacts (snapshots, console logs, screenshots)
+.playwright-mcp/
+
 # Coverage
 *.profraw
 /coverage
