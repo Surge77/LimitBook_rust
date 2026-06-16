@@ -16,6 +16,9 @@ frontend/.vite
 # Playwright MCP test artifacts (snapshots, console logs, screenshots)
 .playwright-mcp/
 
+# Internal design/architecture notes — kept locally, not published
+DESIGN.md
+
 # Coverage
 *.profraw
 /coverage
