@@ -34,7 +34,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 rand = "0.8"
 
 # Dev / test / bench
-criterion = "0.5"
+criterion = "0.8"
 proptest = "1"
 
 # Build the release/bench profile for real low-latency measurement.
