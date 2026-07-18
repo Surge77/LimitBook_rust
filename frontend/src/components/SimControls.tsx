@@ -1,68 +1,55 @@
-import { useEffect, useState } from 'react'
-import { startSim, stopSim } from '../lib/api'
+// Flow throttle for synthetic order flow. Drives the in-browser sim directly;
+// against a live gateway it calls the /sim endpoints instead.
 
-const DEFAULT_RATE = 500
+import { useState } from 'react'
+import { startSim, stopSim } from '../lib/api'
+import { feed } from '../lib/feed'
+
+const RATES = [
+  { label: 'Calm', rate: 12 },
+  { label: 'Active', rate: 40 },
+  { label: 'Busy', rate: 120 },
+  { label: 'Stress', rate: 240 },
+] as const
 
 export function SimControls() {
-  const [rate, setRate] = useState(DEFAULT_RATE)
-  const [running, setRunning] = useState(false)
+  const [active, setActive] = useState(1)
 
-  // Auto-start synthetic flow on mount so the dashboard is alive on load rather than blank
-  // until the operator clicks Start. Stop flow remains available. Idempotent across clients.
-  useEffect(() => {
-    let cancelled = false
-    startSim(DEFAULT_RATE)
-      .then(() => {
-        if (!cancelled) setRunning(true)
-      })
-      .catch(() => undefined)
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const toggle = async () => {
-    try {
-      if (running) {
-        await stopSim()
-        setRunning(false)
-      } else {
+  const choose = async (i: number) => {
+    setActive(i)
+    const { rate } = RATES[i]
+    if (feed.mode === 'gateway') {
+      try {
         await startSim(rate)
-        setRunning(true)
+      } catch {
+        await stopSim().catch(() => {})
       }
-    } catch {
-      // surface nothing critical; controls remain usable
+    } else {
+      feed.setIntensity(rate)
     }
-  }
-
-  const onRate = async (next: number) => {
-    setRate(next)
-    if (running) await startSim(next).catch(() => undefined)
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-zinc-800 bg-zinc-950 p-3">
-      <div className="text-xs uppercase tracking-wide text-zinc-500">Simulator</div>
-      <button
-        onClick={toggle}
-        className={`rounded px-2 py-1.5 text-sm font-semibold text-white ${
-          running ? 'bg-rose-600 hover:bg-rose-500' : 'bg-emerald-600 hover:bg-emerald-500'
-        }`}
-      >
-        {running ? 'Stop flow' : 'Start flow'}
-      </button>
-      <label className="text-xs text-zinc-500">
-        Rate: <span className="tabular-nums text-zinc-300">{rate.toLocaleString()}</span> orders/s
-        <input
-          type="range"
-          min={10}
-          max={20000}
-          step={10}
-          value={rate}
-          onChange={(e) => onRate(Number(e.target.value))}
-          className="mt-1 w-full accent-sky-500"
-        />
-      </label>
+    <div className="tpanel flex flex-col gap-2 p-3">
+      <div className="flex items-center justify-between">
+        <span className="tlabel">Market activity</span>
+        <span className="mono text-[10px] text-text-3">{RATES[active].rate}/s</span>
+      </div>
+      <div className="grid grid-cols-4 gap-1">
+        {RATES.map((r, i) => (
+          <button
+            key={r.label}
+            onClick={() => choose(i)}
+            className={`py-1.5 text-[11px] font-medium transition-colors ${
+              active === i
+                ? 'bg-amber/15 text-amber outline outline-1 outline-amber/50'
+                : 'border border-line bg-raised text-text-2 hover:text-text'
+            }`}
+          >
+            {r.label}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
